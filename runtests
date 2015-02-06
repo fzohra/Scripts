@@ -1,0 +1,55 @@
+#!/bin/bash          
+
+# Specify the path for the files as necessary:
+path_=""
+
+# There are 3 wayss to run this script. Do not include the .in extension when supplying the file name
+
+# 1. ./runtests
+#	 This will prompt you to enter a file name.
+# 2. ./runtests filename
+#	 This will run the test on 'filename.in'
+# 3. ./runtests -list
+# 	 This will run the files listed in file_list on line 45
+
+# i: input file extension
+# o: putput file extension
+# path_: path to file if any
+# file_in: file passed as a command line parameter
+# file_list: list of files to test
+
+i=".in"
+o=".out"
+
+option="-list"
+
+#read the file
+if [ -z $1 ] ; then
+	echo -n "Enter file name: "
+	read file_in
+else
+	if [ "$1" != "$option" ] ; then
+		file_in=$1
+	else
+		echo "Testing List. Note that the file_lists variable must be set on line 45 of the script in order to run."
+	fi
+fi
+
+if [ -n "$file_in" ] ; then
+	file_list=$file_in
+else
+	file_list=()
+	# -list option : uncomment and add each file to test to the list 
+	# example: file_list=( 'eid1-RunCollatz' 'eid2-RunCollatz' )
+
+	# file_list=('filename1' 'filename2' 'filename3')
+fi
+
+
+for f in "${file_list[@]}"
+	do
+		echo "Testing $path_$f$i" 
+		python3 RunCollatz.py < $path_$f$i > RunCollatz.tmp
+		diff RunCollatz.tmp $path_$f$o 
+		echo "Completed testing $f$i"
+	done
